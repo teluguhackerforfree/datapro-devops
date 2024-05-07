@@ -24,7 +24,7 @@ ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'place-yo
 ```
 ## Step-6: Test the MySql server if it is working by running sample sql queries
 ```
-CREATE DATABASE ashokit;
+CREATE DATABASE datapro;
 
 USE datapro;
 
