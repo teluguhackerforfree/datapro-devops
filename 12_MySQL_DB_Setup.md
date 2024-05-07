@@ -26,7 +26,7 @@ ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'place-yo
 ```
 CREATE DATABASE ashokit;
 
-USE ashokit;
+USE datapro;
 
 CREATE TABLE emp (id INT, name VARCHAR(45));
 
