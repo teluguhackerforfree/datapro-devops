@@ -70,3 +70,99 @@ eksctl create cluster --name dataprocluster --region ap-south-1 --node-type t2.m
 ```
 eksctl delete cluster --name dataprocluster --region ap-south-1
 ```
+
+
+
+# see if you can get the nodes you created
+kubectl get nodes
+
+# Install nano editor in cloudshell. We will need this in the next task
+sudo yum install nano -y
+
+
+
+Task 4: Create a new POD in EKS for the 2048 game
+================================================
+
+# clean up the files in cloudshell (Optional)
+rm *.* 
+
+# create the config file in YAML to deploy 2048 game pod into the cluster
+nano 2048-pod.yaml
+
+### code starts ###
+apiVersion: v1
+kind: Pod
+metadata:
+   name: 2048-pod
+   labels:
+      app: 2048-ws
+spec:
+   containers:
+   - name: 2048-container
+     image: blackicebird/2048
+     ports:
+       - containerPort: 80
+
+### code ends ###
+
+
+# apply the config file to create the pod
+kubectl apply -f 2048-pod.yaml
+#pod/2048-pod created
+
+# view the newly created pod
+kubectl get pods
+
+
+Task 5: Setup Load Balancer Service
+===================================
+nano mygame-svc.yaml  
+
+### code starts ###
+
+apiVersion: v1
+kind: Service
+metadata:
+   name: mygame-svc
+spec:
+   selector:
+      app: 2048-ws
+   ports:
+   - protocol: TCP
+     port: 80
+     targetPort: 80
+   type: LoadBalancer
+
+### code ends ###
+
+# apply the config file
+kubectl apply -f mygame-svc.yaml
+
+# view details of the modified service
+kubectl describe svc mygame-svc
+
+# Access the LoadBalancer Ingress on the kops instance
+curl <LoadBalancer_Ingress>:<Port_number>
+or
+curl a06aa56b81f5741268daca84dca6b4f8-694631959.us-east-1.elb.amazonaws.com:80
+(try this from your laptop, not from your cloudshell)
+
+# Go to EC2 console. get the DNS name of ELB and paste the DNS into address bar of the browser
+# It will show the 2048 game. You can play. (need to wait for 2-3 minutes for the 
+# setup to be complete)
+
+
+Task 3: Cleanup
+---------------
+# Clean up all the resources created in the task
+kubectl get pods
+kubectl delete -f 2048-pod.yaml
+
+kubectl get services
+kubectl delete -f mygame-svc.yaml
+
+
+
+####################################################################
+
